@@ -3,6 +3,7 @@
 namespace SilverStripe\Assets\Tests;
 
 use SilverStripe\Assets\FileNameFilter;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\View\Parsers\Transliterator;
 
@@ -34,6 +35,27 @@ class FileNameFilterTest extends SapphireTest
             'Brtchen-fr-all-mit_Unterstrich.jpg',
             $filter->filter($name)
         );
+    }
+
+    public function testFilterWithMultipleIterations()
+    {
+        Config::withConfig(function(){
+            // defaults as in FolderNameFilter
+            FileNameFilter::config()->merge(
+                'default_replacements',
+                [
+                    '/\./' => '-', // replace dots with dashes
+                ]
+            );
+
+            $name = 'foo.-bar';
+            $filter = new FileNameFilter();
+            $filter->setTransliterator(false);
+            $this->assertEquals(
+                'foo-bar',
+                $filter->filter($name)
+            );
+        });
     }
 
     public function testFilterWithTransliterator()

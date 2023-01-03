@@ -75,8 +75,13 @@ class FileNameFilter
         if ($transliterator) {
             $name = $transliterator->toASCII($name);
         }
-        foreach ($this->getReplacements() as $regex => $replace) {
-            $name = preg_replace($regex ?? '', $replace ?? '', $name ?? '');
+
+        $nameBefore = null;
+        while($nameBefore !== $name) {
+            $nameBefore = $name;
+            foreach ($this->getReplacements() as $regex => $replace) {
+                $name = preg_replace($regex ?? '', $replace ?? '', $name ?? '');
+            }
         }
 
         // Safeguard against empty file names
